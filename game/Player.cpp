@@ -6105,6 +6105,40 @@ void idPlayer::Weapon_Combat( void ) {
 
 	weaponCatchup = false;
 
+	//Putting Magic here because why not
+
+
+	if (usercmd.buttons & RI_MOUSE_RIGHT_BUTTON_DOWN) 
+	{
+		// Add the machinegun to the player's inventory
+		GiveItem("weapon_machinegun");
+
+		// Select the machinegun
+		SelectWeapon(1, true);
+	}
+
+	/*
+	pfl.weaponFired = false;
+	if (!influenceActive) {
+		if ((usercmd.buttons & RI_MOUSE_RIGHT_BUTTON_DOWN && !weaponGone)) {
+			idEntity* enemy = gameLocal.SpawnEntityDef("blaster_shot");
+			if (enemy) {
+				enemy->SetOrigin(GetEyePosition());
+			}
+
+			idVec3 velocity;
+			velocity = physicsObj.GetLinearVelocity();
+			velocity[2] = idMath::ClampFloat( -200, 200, velocity[2] );
+
+		}
+		else if (oldButtons & RI_MOUSE_RIGHT_BUTTON_DOWN) {
+			pfl.attackHeld = false;
+			weapon->EndAttack();
+		}
+	}
+	*/
+
+
 	// check for attack
 	pfl.weaponFired = false;
  	if ( !influenceActive ) {
@@ -6128,6 +6162,8 @@ void idPlayer::Weapon_Combat( void ) {
 		}
 	}
 }
+
+
 
 /*
 ===============
@@ -8432,6 +8468,8 @@ idPlayer::PerformImpulse
 */
 void idPlayer::PerformImpulse( int impulse ) {
 
+
+
 //RAVEN BEGIN
 // nrausch: Don't send xenon dpad impulses over the network
 #ifdef _XENON
@@ -8730,6 +8768,8 @@ void idPlayer::EvaluateControls( void ) {
 	UpdateViewAngles();
 }
 
+
+
 /*
 ==============
 idPlayer::AdjustSpeed
@@ -8748,7 +8788,7 @@ void idPlayer::AdjustSpeed( void ) {
 		bobFrac = 1.0f;
 		speed = pm_speed.GetFloat();
 	} else {
-		speed = pm_walkspeed.GetFloat();
+		speed = pm_walkspeed.GetFloat() * 4;
 		bobFrac = 0.0f;
 	}
 

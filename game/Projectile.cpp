@@ -867,7 +867,7 @@ bool idProjectile::Collide( const trace_t &collision, const idVec3 &velocity, bo
 		}
 
 // RAVEN END
-
+	
 	// if the hit entity takes damage
 	if ( canDamage ) {
 

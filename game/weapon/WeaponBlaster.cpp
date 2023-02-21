@@ -398,13 +398,17 @@ rvWeaponBlaster::State_Fire
 ================
 */
 stateResult_t rvWeaponBlaster::State_Fire ( const stateParms_t& parms ) {
+
+	idVec3 origin;
+	idMat3 axis;
+
 	enum {
 		FIRE_INIT,
 		FIRE_WAIT,
 	};	
 	switch ( parms.stage ) {
 		case FIRE_INIT:	
-
+		
 			StopSound ( SND_CHANNEL_ITEM, false );
 			viewModel->SetShaderParm ( BLASTER_SPARM_CHARGEGLOW, 0 );
 			//don't fire if we're targeting a gui.
@@ -424,10 +428,12 @@ stateResult_t rvWeaponBlaster::State_Fire ( const stateParms_t& parms ) {
 				return SRESULT_DONE;
 			}
 
-
+			//Magic
+			player->GetPosition(origin, axis);
+			gameLocal.Printf("Got Here, position: %f,%f,%f\n", origin.x, origin.y, origin.z);
 	
 			if ( gameLocal.time - fireHeldTime > chargeTime ) {	
-				Attack ( true, 1, spread, 0, 1.0f );
+				Attack ( true, 20, spread * 3, 0, 1.0f );
 				PlayEffect ( "fx_chargedflash", barrelJointView, false );
 				PlayAnim( ANIMCHANNEL_ALL, "chargedfire", parms.blendFrames );
 			} else {

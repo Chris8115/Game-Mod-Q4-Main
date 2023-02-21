@@ -26,7 +26,7 @@
 // RAVEN END
 
 #ifdef _WIN32
-#include "TypeInfo.h"
+#include "TypeInfo"
 #else
 #include "NoGameTypeInfo.h"
 #endif
@@ -171,7 +171,7 @@ void Cmd_ListSpawnArgs_f( const idCmdArgs &args ) {
 
 	for ( i = 0; i < ent->spawnArgs.GetNumKeyVals(); i++ ) {
 		const idKeyValue *kv = ent->spawnArgs.GetKeyVal( i );
-		gameLocal.Printf( "\"%s\"  "S_COLOR_WHITE"\"%s\"\n", kv->GetKey().c_str(), kv->GetValue().c_str() );
+		gameLocal.Printf( "\"%s\"  " S_COLOR_WHITE"\"%s\"\n", kv->GetKey().c_str(), kv->GetValue().c_str() );
 	}
 }
 
@@ -3015,6 +3015,30 @@ void Cmd_TestClientModel_f( const idCmdArgs& args ) {
 
 
 // RAVEN END
+
+void Cmd_DoTrace_f(const idCmdArgs& args) 
+{
+	idPlayer* player;
+	idVec3 start, end;
+	idAngles angles;
+	trace_t results = {};
+	player = gameLocal.GetLocalPlayer();
+	if (!player)return;
+
+	start = player->GetPhysics()->GetOrigin();
+	angles = player->viewAngles;
+	end = angles.ToForward();
+	end *= 8000;
+	end += start;
+
+
+	gameLocal.TracePoint(player, results, start, end, player->GetPhysics()->GetClipMask(), player);
+
+	if (results.fraction < 1.0)
+	{
+		gameLocal.Printf("Looking at (%f,%f,%f)", results.endpos.x, results.endpos.y, results.endpos.z);
+	}
+}
 
 void Cmd_CheckSave_f( const idCmdArgs &args );
 
