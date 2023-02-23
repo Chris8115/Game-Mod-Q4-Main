@@ -8629,6 +8629,10 @@ void idPlayer::PerformImpulse( int impulse ) {
 			GiveItem("weapon_hyperblaster");
 			break;
 		}
+		case IMPULSE_26: {
+			RemoveWeapon("def_weapon3");
+			break;
+		}
 
 // RITUAL BEGIN
 // squirrel: Mode-agnostic buymenus
