@@ -6046,6 +6046,8 @@ idPlayer::Weapon_Combat
 */
 void idPlayer::Weapon_Combat( void ) {
 	
+	bool midSpell = false;
+
  	if ( influenceActive || !weaponEnabled || gameLocal.inCinematic || privateCameraView ) {
 		return;
 	}
@@ -6107,14 +6109,31 @@ void idPlayer::Weapon_Combat( void ) {
 
 	//Putting Magic here because why not
 
+	//int buttons = gameLocal.GetLocalPlayer()->usercmd.buttons;
+	const usercmd_t& cmd = gameLocal.GetLocalPlayer()->usercmd;
 
-	if (usercmd.buttons & RI_MOUSE_RIGHT_BUTTON_DOWN) 
+	idPlayer* player = gameLocal.GetLocalPlayer();
+
+
+	if (cmd.buttons & RI_MOUSE_RIGHT_BUTTON_DOWN && midSpell)
 	{
+		midSpell = true;
+
 		// Add the machinegun to the player's inventory
+		GiveItem("weapon_lightninggun");
 		GiveItem("weapon_machinegun");
+		GiveItem("weapon_hyperblaster");
 
 		// Select the machinegun
-		SelectWeapon(1, true);
+		//SelectWeapon(1, true);
+
+		//weapon->IsReady();
+		//FireWeapon();
+	
+		//RemoveWeapon("weapon_lightninggun");
+		
+
+		midSpell = false;
 	}
 
 	/*
@@ -6162,7 +6181,6 @@ void idPlayer::Weapon_Combat( void ) {
 		}
 	}
 }
-
 
 
 /*
@@ -8603,6 +8621,12 @@ void idPlayer::PerformImpulse( int impulse ) {
    		}
 		case IMPULSE_40: {
 			idFuncRadioChatter::RepeatLast();
+			break;
+		}
+
+		//Magic -Custom Commands
+		case IMPULSE_27: {
+			GiveItem("weapon_hyperblaster");
 			break;
 		}
 
