@@ -56,21 +56,22 @@ const int IMPULSE_12			= 12;			// weap 12
 const int IMPULSE_13			= 13;			// weap reload
 const int IMPULSE_14			= 14;			// weap next
 const int IMPULSE_15			= 15;			// weap prev
-const int IMPULSE_16			= 16;			// <unused>
+const int IMPULSE_16			= 16;			// <Del>
 const int IMPULSE_17			= 17;			// ready to play ( toggles ui_ready )
 const int IMPULSE_18			= 18;			// center view
 const int IMPULSE_19			= 19;			// show PDA/INV/MAP
 const int IMPULSE_20			= 20;			// toggle team ( toggles ui_team )
 const int IMPULSE_21			= 21;			// tourney toggle waiting room/spec
 const int IMPULSE_22			= 22;			// spectate
-const int IMPULSE_23			= 23;			// <unused>
-const int IMPULSE_24			= 24;			// <unused>
-const int IMPULSE_25			= 25;			// <unused>
-const int IMPULSE_26			= 26;			// <unused>
-const int IMPULSE_27			= 27;			// <unused>
+const int IMPULSE_23			= 23;			// <lightning weapon>
+const int IMPULSE_24			= 24;			// <Dark matter weapon>
+const int IMPULSE_25			= 25;			// <Railgun>
+const int IMPULSE_26			= 26;			// <Nailgun>
+const int IMPULSE_27			= 27;			// <Hyper Blaster>
 const int IMPULSE_28			= 28;			// vote yes
 const int IMPULSE_29			= 29;			// vote no
 const int IMPULSE_40			= 40;			// repeast last radio chatter
+const int IMPULSE_41			= 41;			// test
 
 // RAVEN BEGIN
 // bdube: added flashlight
@@ -102,7 +103,7 @@ const int IMPULSE_104			= 104;			// Buy weapon_nailgun
 const int IMPULSE_105			= 105;			// Buy weapon_rocketlauncher
 const int IMPULSE_106			= 106;			// Buy weapon_railgun
 const int IMPULSE_107			= 107;			// Buy weapon_lightninggun
-const int IMPULSE_108			= 108;			// UNUSED
+const int IMPULSE_108			= 108;			// Heals the player
 const int IMPULSE_109			= 109;			// Buy weapon_napalmgun
 const int IMPULSE_110			= 110;			// Buy weapon_dmg
 const int IMPULSE_111			= 111;			// UNUSED

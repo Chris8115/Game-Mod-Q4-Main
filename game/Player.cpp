@@ -3965,6 +3965,14 @@ void idPlayer::FireWeapon( void ) {
 	idMat3 axis;
 	idVec3 muzzle;
 
+	//Magic
+	if (!weapon->AmmoAvailable()) {
+		
+		//DropWeapon();
+		//IMPULSE_16;
+	
+	}
+
 //RITUAL BEGIN
 	if( gameLocal.GetIsFrozen() && gameLocal.gameType == GAME_DEADZONE )
 	{
@@ -8625,12 +8633,60 @@ void idPlayer::PerformImpulse( int impulse ) {
 		}
 
 		//Magic -Custom Commands
+		//Spell 1
 		case IMPULSE_27: {
 			GiveItem("weapon_hyperblaster");
+			SelectWeapon("weapon_hyperblaster");
+			Reload();
+			weapon->AddToClip(1);
 			break;
 		}
-		case IMPULSE_26: {
-			RemoveWeapon("def_weapon3");
+		case IMPULSE_16: {
+			RemoveWeapon("def_weapon"+currentWeapon);
+			SelectWeapon("weapon_blaster");
+			//PrevWeapon();
+			break;
+		}
+		//Spell 2
+		case IMPULSE_23: {
+			GiveItem("weapon_lightninggun");
+			SelectWeapon("weapon_lightninggun");
+			Reload();
+			weapon->AddToClip(1);
+			//PrevWeapon();
+			break;
+		}
+		//Spell 3
+		case IMPULSE_24: {
+			GiveItem("weapon_dmg");
+			SelectWeapon("weapon_dmg");
+			Reload();
+			weapon->AddToClip(1);
+			//PrevWeapon();
+			break;
+		}
+		//Spell 4
+		case IMPULSE_25: {
+			GiveItem("weapon_railgun");
+			SelectWeapon("weapon_railgun");
+			Reload();
+			weapon->AddToClip(1);
+			//PrevWeapon();
+			break;
+		}
+		//Spell 5
+		case IMPULSE_26 : {
+			gameLocal.Printf("Nailgun!");
+			GiveItem("weapon_nailgun");
+			SelectWeapon("weapon_nailgun");
+			Reload();
+			weapon->AddToClip(1);
+			//PrevWeapon();
+			break;
+		}
+		case IMPULSE_41 : {
+			gameLocal.Printf("Healing!");
+			health += 100;
 			break;
 		}
 
@@ -8644,7 +8700,7 @@ void idPlayer::PerformImpulse( int impulse ) {
 		case IMPULSE_105:	AttemptToBuyItem( "weapon_rocketlauncher" );		break;
 		case IMPULSE_106:	AttemptToBuyItem( "weapon_railgun" );				break;
 		case IMPULSE_107:	AttemptToBuyItem( "weapon_lightninggun" );			break;
-		case IMPULSE_108:	break; // Unused
+		//case IMPULSE_108:	break; // Unused
 		case IMPULSE_109:	AttemptToBuyItem( "weapon_napalmgun" );				break;
 		case IMPULSE_110:	/* AttemptToBuyItem( "weapon_dmg" );*/				break;
 		case IMPULSE_111:	break; // Unused
@@ -9351,6 +9407,10 @@ Called every tic for each player
 ==============
 */
 void idPlayer::Think( void ) {
+
+
+
+
 	renderEntity_t *headRenderEnt;
  
 	if ( talkingNPC ) {
@@ -11559,7 +11619,8 @@ void idPlayer::Event_SelectWeapon( const char *weaponName ) {
 			if ( !idStr::Cmp( weap, weaponName ) ) {
 
 				if ( !inventory.HasAmmo( weap ) ) {
-					return;
+					Reload();
+					//return;
 				}
 				weaponNum = i;
 				break;

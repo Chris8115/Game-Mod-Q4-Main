@@ -167,6 +167,12 @@ stateResult_t rvWeaponHyperblaster::State_Idle( const stateParms_t& parms ) {
 		STAGE_INIT,
 		STAGE_WAIT,
 	};	
+	//Adds ammo as soon as wepaon is held
+
+
+	AddToClip(ClipSize());
+
+
 	switch ( parms.stage ) {
 		case STAGE_INIT:
 			if ( !AmmoAvailable ( ) ) {
@@ -201,10 +207,13 @@ stateResult_t rvWeaponHyperblaster::State_Idle( const stateParms_t& parms ) {
 					return SRESULT_DONE;
 				}  
 				if ( wsfl.attack && AutoReload() && !AmmoInClip ( ) && AmmoAvailable () ) {
+
+			
 					SetState ( "Reload", 4 );
 					return SRESULT_DONE;			
 				}
 				if ( wsfl.netReload || (wsfl.reload && AmmoInClip() < ClipSize() && AmmoAvailable()>AmmoInClip()) ) {
+	
 					SetState ( "Reload", 4 );
 					return SRESULT_DONE;			
 				}				
@@ -229,7 +238,7 @@ stateResult_t rvWeaponHyperblaster::State_Fire ( const stateParms_t& parms ) {
 		case STAGE_INIT:
 			SpinUp ( );
 			nextAttackTime = gameLocal.time + (fireRate * owner->PowerUpModifier ( PMOD_FIRERATE ));
-			Attack ( false, 1, spread, 0, 1.0f );
+			Attack ( false, 2, spread, 0, 1.0f );
 			if ( ClipSize() ) {
 				viewModel->SetShaderParm ( HYPERBLASTER_SPARM_BATTERY, (float)AmmoInClip()/ClipSize() );
 			} else {
