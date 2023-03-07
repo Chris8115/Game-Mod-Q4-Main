@@ -8684,9 +8684,15 @@ void idPlayer::PerformImpulse( int impulse ) {
 			//PrevWeapon();
 			break;
 		}
+		//Spell 6
 		case IMPULSE_41 : {
 			gameLocal.Printf("Healing!");
 			health += 100;
+			break;
+		}
+		//Spell 7
+		case IMPULSE_42: {
+			Event_SetArmor(100);
 			break;
 		}
 

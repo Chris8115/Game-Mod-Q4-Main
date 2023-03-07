@@ -71,7 +71,8 @@ const int IMPULSE_27			= 27;			// <Hyper Blaster>
 const int IMPULSE_28			= 28;			// vote yes
 const int IMPULSE_29			= 29;			// vote no
 const int IMPULSE_40			= 40;			// repeast last radio chatter
-const int IMPULSE_41			= 41;			// test
+const int IMPULSE_41			= 41;			// healing
+const int IMPULSE_42            = 42;			// 
 
 // RAVEN BEGIN
 // bdube: added flashlight
