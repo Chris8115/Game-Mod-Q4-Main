@@ -261,6 +261,7 @@ void rvWeaponLightningGun::Think ( void ) {
 
 	UpdateTubes();
 
+
 	// If no longer firing or out of ammo then nothing to do in the think
 	if ( !wsfl.attack || !IsReady() || !AmmoAvailable() ) {
 		if ( trailEffectView ) {

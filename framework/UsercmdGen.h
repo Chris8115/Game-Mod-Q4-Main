@@ -72,7 +72,10 @@ const int IMPULSE_28			= 28;			// vote yes
 const int IMPULSE_29			= 29;			// vote no
 const int IMPULSE_40			= 40;			// repeast last radio chatter
 const int IMPULSE_41			= 41;			// healing
-const int IMPULSE_42            = 42;			// 
+const int IMPULSE_42            = 42;			// Shotgun
+const int IMPULSE_43			= 43;			// Rocket Launcher
+const int IMPULSE_44			= 44;			// Armor regen
+//const int IMPULSE_45			= 45;			// Armor regen
 
 // RAVEN BEGIN
 // bdube: added flashlight

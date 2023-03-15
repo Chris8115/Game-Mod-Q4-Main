@@ -350,6 +350,7 @@ stateResult_t rvWeaponBlaster::State_Charge ( const stateParms_t& parms ) {
 				viewModel->SetShaderParm ( BLASTER_SPARM_CHARGEGLOW, f );
 				
 				if ( !wsfl.attack ) {
+					
 					SetState ( "Fire", 0 );
 					return SRESULT_DONE;
 				}
@@ -411,7 +412,7 @@ stateResult_t rvWeaponBlaster::State_Fire ( const stateParms_t& parms ) {
 		
 			StopSound ( SND_CHANNEL_ITEM, false );
 			viewModel->SetShaderParm ( BLASTER_SPARM_CHARGEGLOW, 0 );
-			//don't fire if we're targeting a gui.
+			//don't fire if we're targeting a gui. 
 			idPlayer* player;
 			player = gameLocal.GetLocalPlayer();
 
@@ -427,13 +428,17 @@ stateResult_t rvWeaponBlaster::State_Fire ( const stateParms_t& parms ) {
 				SetState ( "Idle", 4 );
 				return SRESULT_DONE;
 			}
-
+			
 			//Magic
 			player->GetPosition(origin, axis);
+			if(player->inventory.armor <= 95)
+			{
+				player->inventory.armor += 5;
+			}
 			gameLocal.Printf("Got Here, position: %f,%f,%f\n", origin.x, origin.y, origin.z);
 	
 			if ( gameLocal.time - fireHeldTime > chargeTime ) {	
-				Attack ( true, 20, spread * 3, 0, 1.0f );
+				Attack ( true, 5, spread * 3, 0, 1.0f );
 				PlayEffect ( "fx_chargedflash", barrelJointView, false );
 				PlayAnim( ANIMCHANNEL_ALL, "chargedfire", parms.blendFrames );
 			} else {

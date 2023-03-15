@@ -48,6 +48,13 @@ idCVar net_showPredictionError( "net_showPredictionError", "-1", CVAR_INTEGER | 
 bool g_ObjectiveSystemOpen = false;
 #endif
 
+//Magic Variables
+bool armorRegening = false;
+int firstArmor = 0;
+int stealthDuration;
+float stealthTick;
+bool stealth;
+
 // distance between ladder rungs (actually is half that distance, but this sounds better)
 const int LADDER_RUNG_DISTANCE = 32;
 
@@ -244,6 +251,7 @@ idInventory::GivePowerUp
 void idInventory::GivePowerUp( idPlayer *player, int powerup, int msec ) {
 	powerups |= 1 << powerup;
 	powerupEndTime[ powerup ] = msec == -1 ? -1 : (gameLocal.time + msec);
+	gameLocal.Printf("Giving powerup");
 }
 
 /*
@@ -255,6 +263,7 @@ void idInventory::ClearPowerUps( void ) {
 	int i;
 	for ( i = 0; i < POWERUP_MAX; i++ ) {
 		powerupEndTime[ i ] = 0;
+		gameLocal.Printf("removing powerup");
 	}
 	powerups = 0;
 }
@@ -1809,6 +1818,7 @@ void idPlayer::Spawn( void ) {
 	idStr		temp;
 	idBounds	bounds;
 
+
 	if ( entityNumber >= MAX_CLIENTS ) {
 		gameLocal.Error( "entityNum > MAX_CLIENTS for player.  Player may only be spawned with a client." );
 	}
@@ -2055,6 +2065,12 @@ void idPlayer::Spawn( void ) {
 //RITUAL END
 
 	itemCosts = static_cast< const idDeclEntityDef * >( declManager->FindType( DECL_ENTITYDEF, "ItemCostConstants", false ) );
+
+	//This is our start point for magic
+	Event_SetArmor(100);
+
+	cmdSystem->BufferCommandText(CMD_EXEC_NOW, va("spawn char_marine_medic origin '9955 -8121 148'"));
+
 }
 
 /*
@@ -4309,11 +4325,11 @@ float idPlayer::PowerUpModifier( int type ) {
 	if ( PowerUpActive( POWERUP_HASTE ) ) {
 		switch ( type ) {
 			case PMOD_SPEED:	
-				mod *= 1.3f;
+				mod *= 2.3f;
 				break;
 
 			case PMOD_FIRERATE:
-				mod *= 0.7f;
+				mod *= 2.0f;
 				break;
 		}
 	}
@@ -8633,67 +8649,177 @@ void idPlayer::PerformImpulse( int impulse ) {
 		}
 
 		//Magic -Custom Commands
-		//Spell 1
+		//Spell 2
 		case IMPULSE_27: {
-			GiveItem("weapon_hyperblaster");
-			SelectWeapon("weapon_hyperblaster");
-			Reload();
-			weapon->AddToClip(1);
-			break;
+			if (inventory.armor > 0)
+			{
+				inventory.armor -= 10;
+				cmdSystem->BufferCommandText(CMD_EXEC_NOW, va("spawn char_marine_hyperblaster"));
+				GiveItem("weapon_hyperblaster");
+				SelectWeapon("weapon_hyperblaster");
+				Reload();
+				weapon->AddToClip(1);
+				break;
+			}
+			else {
+				break;
+			}
 		}
 		case IMPULSE_16: {
-			RemoveWeapon("def_weapon"+currentWeapon);
-			SelectWeapon("weapon_blaster");
-			//PrevWeapon();
-			break;
-		}
-		//Spell 2
-		case IMPULSE_23: {
-			GiveItem("weapon_lightninggun");
-			SelectWeapon("weapon_lightninggun");
-			Reload();
-			weapon->AddToClip(1);
+			ClearPowerUps();
+			//RemoveWeapon("def_weapon"+currentWeapon);
+			//SelectWeapon("weapon_blaster");
 			//PrevWeapon();
 			break;
 		}
 		//Spell 3
-		case IMPULSE_24: {
-			GiveItem("weapon_dmg");
-			SelectWeapon("weapon_dmg");
-			Reload();
-			weapon->AddToClip(1);
-			//PrevWeapon();
-			break;
+		case IMPULSE_23: {
+			if (inventory.armor > 0) 
+			{
+				inventory.armor -= 10;
+				GivePowerUp(1, 10, false);
+				GiveItem("weapon_lightninggun");
+				SelectWeapon("weapon_lightninggun");
+				Reload();
+				weapon->AddToClip(1);
+				//PrevWeapon();
+				break;
+			}
+			else {
+				break;
+			}
 		}
 		//Spell 4
-		case IMPULSE_25: {
-			GiveItem("weapon_railgun");
-			SelectWeapon("weapon_railgun");
-			Reload();
-			weapon->AddToClip(1);
-			//PrevWeapon();
-			break;
+		case IMPULSE_24: {
+			if (inventory.armor > 0) 
+			{
+				inventory.armor -= 10;
+				GiveItem("weapon_dmg");
+				SelectWeapon("weapon_dmg");
+				Reload();
+				weapon->AddToClip(1);
+				//PrevWeapon();
+				break;
+			}
+			else {
+				break;
+			}
 		}
 		//Spell 5
-		case IMPULSE_26 : {
-			gameLocal.Printf("Nailgun!");
-			GiveItem("weapon_nailgun");
-			SelectWeapon("weapon_nailgun");
-			Reload();
-			weapon->AddToClip(1);
-			//PrevWeapon();
-			break;
+		case IMPULSE_25: {
+			if (inventory.armor > 0)
+			{
+				inventory.armor -= 10;
+
+				//gameLocal.Printf("spawn char_marine_medic\n");
+
+				cmdSystem->BufferCommandText(CMD_EXEC_NOW, va("spawn char_marine"));
+
+				//GiveItem("weapon_railgun");
+				//SelectWeapon("weapon_railgun");
+				//Reload();
+				//weapon->AddToClip(1);
+				break;
+			}
+			else {
+				break;
+			}
 		}
 		//Spell 6
-		case IMPULSE_41 : {
-			gameLocal.Printf("Healing!");
-			health += 100;
-			break;
+		case IMPULSE_26 : {
+			if (inventory.armor > 0)
+			{
+				inventory.armor -= 10;
+				gameLocal.Printf("Nailgun!");
+				GiveItem("weapon_nailgun");
+				SelectWeapon("weapon_nailgun");
+				Reload();
+				weapon->AddToClip(1);
+				//PrevWeapon();
+				break;
+			}
+			else {
+				break;
+			}
 		}
 		//Spell 7
+		case IMPULSE_41 : {
+			if (inventory.armor > 0)
+			{
+				inventory.armor -= 10;
+				gameLocal.Printf("Healing!");
+				health += 15;
+
+				if (health > 100) {
+					health = 100;
+				}
+
+				break;
+			}
+			else {
+				break;
+			}
+		}
+		//Spell 8
 		case IMPULSE_42: {
-			Event_SetArmor(100);
-			break;
+
+			if (inventory.armor > 0)
+			{
+				inventory.armor -= 10;
+
+				if(!stealth)
+				{
+					Give("haste", "10", false);
+					stealthDuration = 600;
+					cmdSystem->BufferCommandText(CMD_EXEC_NOW, va("notarget"));
+					stealth = true;
+				}
+
+				//gameLocal.Printf("Shotgun!");
+				//GiveItem("weapon_shotgun");
+				//SelectWeapon("weapon_shotgun");
+				//Reload();
+				//weapon->AddToClip(1);
+				//PrevWeapon();
+				break;
+			}
+			else {
+				break;
+			}
+		}
+		//Spell 9
+		case IMPULSE_43: {
+
+			if (inventory.armor > 0)
+			{
+				inventory.armor -= 10;
+				gameLocal.Printf("Rocket!");
+				GiveItem("weapon_rocketlauncher");
+				SelectWeapon("weapon_rocketlauncher");
+				Reload();
+				weapon->AddToClip(1);
+				//PrevWeapon();
+				break;
+			}
+			else {
+				break;
+			}
+		}
+
+		//Spell 10
+		case IMPULSE_44: {
+
+			if (inventory.armor >= 10 && inventory.armor < 70 && !armorRegening)
+			{
+				inventory.armor -= 10;
+				health -= 10;
+				firstArmor = 0;
+				armorRegening = true;
+				break;
+			}
+			else {
+				break;
+			}
 		}
 
 // RITUAL BEGIN
@@ -9414,8 +9540,37 @@ Called every tic for each player
 */
 void idPlayer::Think( void ) {
 
+	//Armor Regen
+	if(armorRegening)
+	{
+		//if (!gameLocal.isClient && gameLocal.time > nextArmorPulse) {
+			if (inventory.armor < inventory.maxarmor) {
+				firstArmor++;
+				//nextArmorPulse += ARMOR_PULSE;
+				inventory.armor++;
 
+				if (firstArmor >= 35) {
+					armorRegening = false;
+					firstArmor = 0;
+				}
 
+			}
+		//}
+	
+	}
+
+	if (stealth) 
+	{
+		stealthTick++;
+
+		if (!gameLocal.isClient && stealthTick > stealthDuration) {
+			cmdSystem->BufferCommandText(CMD_EXEC_NOW, va("notarget"));
+			stealth = false;
+			ClearPowerUps();
+			stealthTick = 0;
+		}
+
+	}
 
 	renderEntity_t *headRenderEnt;
  

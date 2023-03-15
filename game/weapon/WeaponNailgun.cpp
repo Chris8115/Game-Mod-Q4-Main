@@ -348,6 +348,10 @@ void rvWeaponNailgun::Think ( void ) {
 							playerViewOrigin, 
 							playerViewOrigin + playerViewAxis[0] * guideRange, 
 							MASK_SHOT_BOUNDINGBOX, owner );
+
+
+
+	
 // RAVEN END
 	
 	if ( tr.fraction >= 1.0f ) {
