@@ -75,7 +75,10 @@ const int IMPULSE_41			= 41;			// healing
 const int IMPULSE_42            = 42;			// Shotgun
 const int IMPULSE_43			= 43;			// Rocket Launcher
 const int IMPULSE_44			= 44;			// Armor regen
-//const int IMPULSE_45			= 45;			// Armor regen
+const int IMPULSE_45			= 45;			// Start Game
+const int IMPULSE_46			= 46;			// Heal++
+const int IMPULSE_47			= 47;			// Armor++
+const int IMPULSE_48			= 48;			// StealthTime
 
 // RAVEN BEGIN
 // bdube: added flashlight

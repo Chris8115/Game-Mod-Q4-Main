@@ -55,6 +55,13 @@ int stealthDuration;
 float stealthTick;
 bool stealth;
 
+int wave = 0;
+bool spawningWaves = false;
+int enemiesSpawned = 0;
+int timeBetweenSpawns = 250, timeBetweenWaves, spawnTicks;
+
+int healBuffCost = 30, healBuffModifier = 0, armorBuffCost = 30, armorBuffModifier = 0, stealthBuffCost = 30, stealthBuffModifier = 0;
+
 // distance between ladder rungs (actually is half that distance, but this sounds better)
 const int LADDER_RUNG_DISTANCE = 32;
 
@@ -993,7 +1000,7 @@ bool idInventory::Give( idPlayer *owner, const idDict &spawnArgs, const char *st
 		gameLocal.Warning( "Unknown stat '%s' added to player's inventory", statname );
 		return false;
 	}
-
+	
 	return true;
 }
 
@@ -2068,8 +2075,13 @@ void idPlayer::Spawn( void ) {
 
 	//This is our start point for magic
 	Event_SetArmor(100);
+	hud->SetStateInt("heal_buff_cost", healBuffCost);
+	hud->SetStateInt("armor_buff_cost", armorBuffCost);
+	hud->SetStateInt("stealth_buff_cost", stealthBuffCost);
 
-	cmdSystem->BufferCommandText(CMD_EXEC_NOW, va("spawn char_marine_medic origin '9955 -8121 148'"));
+
+
+	//cmdSystem->BufferCommandText(CMD_EXEC_NOW, va("spawn char_marine_medic origin '9955 -8121 148'"));
 
 }
 
@@ -8748,7 +8760,7 @@ void idPlayer::PerformImpulse( int impulse ) {
 			{
 				inventory.armor -= 10;
 				gameLocal.Printf("Healing!");
-				health += 15;
+				health += (15 + healBuffModifier);
 
 				if (health > 100) {
 					health = 100;
@@ -8770,7 +8782,7 @@ void idPlayer::PerformImpulse( int impulse ) {
 				if(!stealth)
 				{
 					Give("haste", "10", false);
-					stealthDuration = 600;
+					stealthDuration = 600 + stealthBuffModifier;
 					cmdSystem->BufferCommandText(CMD_EXEC_NOW, va("notarget"));
 					stealth = true;
 				}
@@ -8820,6 +8832,61 @@ void idPlayer::PerformImpulse( int impulse ) {
 			else {
 				break;
 			}
+		}
+
+		//Start mini game
+		case IMPULSE_45: 
+		{
+			if(!spawningWaves)
+			{
+				gameLocal.Printf("Starting game");
+				cmdSystem->BufferCommandText(CMD_EXEC_NOW, va("killmonsters"));
+				cmdSystem->BufferCommandText(CMD_EXEC_NOW, va("spawn char_marine_medic origin '9854 -6833 6'"));
+				cmdSystem->BufferCommandText(CMD_EXEC_NOW, va("spawn char_marine_medic origin '9953 -6810 31'"));
+				cmdSystem->BufferCommandText(CMD_EXEC_NOW, va("spawn char_marine_medic origin '9764 -6866 4'"));
+				//SetOrigin(idVec3(9933, -7954, 155));
+				wave = 1;
+				hud->SetStateInt("wave_num", wave);
+				spawningWaves = true;
+			
+			}
+
+			break;
+
+		}
+		case IMPULSE_46:
+		{
+			if(health - healBuffCost > 0)
+			{
+				health -= healBuffCost;
+				healBuffModifier += 5;
+				healBuffCost += 10;
+				hud->SetStateInt("heal_buff_cost", healBuffCost);
+			}
+			break;
+		}
+		case IMPULSE_47:
+		{
+			if(health - armorBuffCost > 0)
+			{
+				health -= armorBuffCost;
+				armorBuffModifier += 5;
+				armorBuffCost += 10;
+				hud->SetStateInt("armor_buff_cost", armorBuffCost);
+			}
+			
+			break;
+		}
+		case IMPULSE_48:
+		{
+			if(health - stealthBuffCost > 0)
+			{
+				health - stealthBuffCost;
+				stealthBuffModifier += 50;
+				stealthBuffCost += 25;
+				hud->SetStateInt("stealth_buff_cost", stealthBuffCost);
+			}
+			break;
 		}
 
 // RITUAL BEGIN
@@ -9539,7 +9606,7 @@ Called every tic for each player
 ==============
 */
 void idPlayer::Think( void ) {
-
+	//Magic
 	//Armor Regen
 	if(armorRegening)
 	{
@@ -9549,7 +9616,7 @@ void idPlayer::Think( void ) {
 				//nextArmorPulse += ARMOR_PULSE;
 				inventory.armor++;
 
-				if (firstArmor >= 35) {
+				if (firstArmor >= (35 + armorBuffModifier)) {
 					armorRegening = false;
 					firstArmor = 0;
 				}
@@ -9570,6 +9637,59 @@ void idPlayer::Think( void ) {
 			stealthTick = 0;
 		}
 
+	}
+
+	//Wave Spawning Logic
+	if (spawningWaves) {
+	
+		//while (spawningWaves) {
+			spawnTicks++;
+			//gameLocal.Printf("timeBetweenSpawns: " + timeBetweenSpawns);
+			if (spawnTicks >= timeBetweenSpawns)
+			{
+				int test = rand() % 100;
+				if (test > 80)
+				{
+					cmdSystem->BufferCommandText(CMD_EXEC_NOW, va("spawn monster_strogg_marine origin '9155 -7172 2'"));
+				}
+				else if (test > 60 && test < 80)
+				{
+					cmdSystem->BufferCommandText(CMD_EXEC_NOW, va("spawn monster_strogg_marine origin '9380 -6235 3'"));
+				} 
+				else if (test > 40 && test < 60)
+				{
+					cmdSystem->BufferCommandText(CMD_EXEC_NOW, va("spawn monster_strogg_marine origin '10383 -6455 2'"));
+				}
+				else if (test > 20 && test < 40)
+				{
+					cmdSystem->BufferCommandText(CMD_EXEC_NOW, va("spawn monster_strogg_marine origin '9905 -6255 2'"));
+				}
+				else if (test >= 0 && test < 20)
+				{
+					cmdSystem->BufferCommandText(CMD_EXEC_NOW, va("spawn monster_strogg_marine origin '10860 -6981 2'"));
+				}
+				
+				enemiesSpawned++;
+				spawnTicks = 0;
+			}
+
+			if (enemiesSpawned > 10) {
+				{
+					if (timeBetweenSpawns > 50)
+						timeBetweenSpawns -= 50;
+				}
+				wave++;
+				hud->SetStateInt("wave_num", wave);
+				gameLocal.Printf("\nWaves: " + wave);
+				enemiesSpawned = 0;
+			}
+
+			if (health == 0) {
+				gameLocal.Printf("Player died stopping waves");
+				spawningWaves = false;
+			}
+		//}
+	
 	}
 
 	renderEntity_t *headRenderEnt;
